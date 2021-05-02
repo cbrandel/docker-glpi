@@ -33,6 +33,7 @@ RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
         bzip2-dev \
+        curl-dev \
         freetype-dev \
         icu-dev \
         imagemagick-dev \
@@ -42,14 +43,16 @@ RUN set -ex; \
         libmcrypt-dev \
         libpng-dev \
         libxml2-dev \
+        libzip-dev \
         net-snmp-dev \
         openldap-dev \
         pcre-dev \
     ; \
-    docker-php-ext-configure gd --with-freetype --with-png --with-jpeg; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg; \
     docker-php-ext-configure ldap ; \
     docker-php-ext-install -j "$(nproc)" \
        bz2 \
+       curl \
        exif \
        gd \
        imap \
