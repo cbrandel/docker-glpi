@@ -9,7 +9,7 @@ LABEL \
   org.opencontainers.image.source="git@github.com:cbrandel/docker-glpi.git"
 
 # GLPI Version and URL
-ENV VERSION 9.5.1
+ENV VERSION 9.5.5
 ENV URL https://github.com/glpi-project/glpi/releases/download/${VERSION}/glpi-${VERSION}.tgz
 # GLPI settings
 ENV GLPI_ROOT /var/www/glpi
