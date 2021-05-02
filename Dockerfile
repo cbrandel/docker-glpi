@@ -2,6 +2,8 @@ FROM php:7.4-fpm-alpine
 
 MAINTAINER docker-container@cbrandel.de
 
+ARG GLPI_VERSION
+
 LABEL \
   org.opencontainers.image.title="GLPI" \
   org.opencontainers.image.description="GLPI with separate " \
@@ -9,7 +11,7 @@ LABEL \
   org.opencontainers.image.source="git@github.com:cbrandel/docker-glpi.git"
 
 # GLPI Version and URL
-ENV VERSION 9.5.5
+ENV VERSION $GLPI_VERSION
 ENV URL https://github.com/glpi-project/glpi/releases/download/${VERSION}/glpi-${VERSION}.tgz
 # GLPI settings
 ENV GLPI_ROOT /var/www/glpi

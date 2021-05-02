@@ -1,18 +1,25 @@
-DOCKER_REPO = cbrandel
+# import config.
+# You can change the default config with `make config="config_special.env" build`
+config ?= config.env
+include ${config}
+export ${shell sed 's/=.*//' ${config}}
+
+REGISTRY?=docker.io
 
 .PHONY: all build
 
-TAG_NAME := $(shell git tag -l --contains HEAD)
-GIT_BRANCH := $(subst heads/,,$(shell git rev-parse --abbrev-ref HEAD 2>/dev/null))
-GLPI_DEV_IMAGE := glpi-dev$(if $(TAG_NAME),:$(subst /,-,$(TAG_NAME)))
-GLPI_IMAGE := "cbrandel/glpi"
+TAG 	:= ${shell git log -1 --pretty=%h}
+IMG 	:= ${NAME}:${TAG}
 
 all: build
 
-build: build-glpi-dev
+build:
+	@docker build --build-arg GLPI_VERSION=${GLPI_VERSION} -t ${IMG} .
+	@docker tag ${IMG} ${REGISTRY}/${NAME}:${GLPI_VERSION}
+	@docker tag ${IMG} ${REGISTRY}/${NAME}:latest
 
-build-glpi-dev:
-	docker build ${DOCKER_FLAGS} -t ${GLPI_DEV_IMAGE} .
+login:
+	@docker login ${REGISTRY}
 
-build-glpi:
-	docker build ${DOCKER_FLAGS} -t ${GLPI_IMAGE}:${TAG_NAME} .
+push: login
+	@docker push --all-tags ${REGISTRY}/${NAME}
