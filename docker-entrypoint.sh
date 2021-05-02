@@ -39,8 +39,8 @@ EOF
 ) > "${GLPI_CONFIG_DIR}/config_db.php"
 
 # check for database
-nok=5
-echo -n "Wainting for mariadb"
+nok=10
+echo -n "Waiting for mariadb"
 while [ $nok != 0 ]
 do
     echo -n "."
@@ -50,6 +50,7 @@ do
         break
     else
         nok=$(($nok - 1))
+        sleep 5
     fi
 done
 echo
