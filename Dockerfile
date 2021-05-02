@@ -49,7 +49,7 @@ RUN set -ex; \
         pcre-dev \
     ; \
     docker-php-ext-configure gd --with-freetype --with-jpeg; \
-    docker-php-ext-configure ldap ; \
+    docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
        bz2 \
        curl \
@@ -110,7 +110,7 @@ RUN set -ex; \
 RUN set -ex; \
     curl -fsSL -o glpi.tar.gz $URL; \
     tar -xf glpi.tar.gz -C "${GLPI_ROOT}" --strip-components=1; \
-    chown www-data:www-data "${GLPI_ROOT}"; \
+    chown -R www-data:www-data "${GLPI_ROOT}"; \
     rm -r glpi.tar.gz
 
 VOLUME [ "${GLPI_VAR_DIR}" "${GLPI_LOG_DIR}" "${GLPI_CONFIG_DIR}" ]

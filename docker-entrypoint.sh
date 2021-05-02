@@ -21,8 +21,9 @@ do
     then
         mkdir "$dir"
     fi
-    setfacl -m user:www-data:rwx,group:www-data:rwx "${GLPI_VAR_DIR}/${dir}"
 done
+chown www-data:www-data "${GLPI_VAR_DIR}"
+chmod u=rwX,g=rwX,o=--- "${GLPI_VAR_DIR}"
 
 echo "Create config_db.php file..."
 (
@@ -49,6 +50,6 @@ fi
 bin/console glpi:database:install -n > /dev/null 2>&1
 
 # delete the install file
-rm "${GLPI_ROOT}/install/install.php"
+test -f "${GLPI_ROOT}/install/install.php" && rm "${GLPI_ROOT}/install/install.php"
 
 exec "$@"
