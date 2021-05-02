@@ -1,4 +1,4 @@
-DOCKER_REPO = phpmyadmin
+DOCKER_REPO = cbrandel
 
 .PHONY: all build
 
