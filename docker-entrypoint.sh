@@ -22,8 +22,8 @@ do
         mkdir "$dir"
     fi
 done
-chown www-data:www-data "${GLPI_VAR_DIR}"
-chmod u=rwX,g=rwX,o=--- "${GLPI_VAR_DIR}"
+chown -R www-data:www-data "${GLPI_VAR_DIR}" "${GLPI_LOG_DIR}"
+chmod -R u=rwX,g=rwX,o=--- "${GLPI_VAR_DIR}" "${GLPI_LOG_DIR}"
 
 echo "Create config_db.php file..."
 (
@@ -39,17 +39,35 @@ EOF
 ) > "${GLPI_CONFIG_DIR}/config_db.php"
 
 # check for database
+nok=5
+echo -n "Wainting for mariadb"
+while [ $nok != 0 ]
+do
+    echo -n "."
+    nc -w 30 -z mariadb 3306
+    if [ $? == 0 ]
+    then
+        break
+    else
+        nok=$(($nok - 1))
+    fi
+done
+echo
 cd "${GLPI_ROOT}"
 db_res=$(bin/console glpi:database:check > /dev/null 2>&1)
 if [ $? == 255 ]
 then
   echo "Database does not exist."
-  bin/console glpi:database:install -n > /dev/null 2>&1
+  bin/console glpi:database:install -n
 fi
 # run database update, just in case.
-bin/console glpi:database:install -n > /dev/null 2>&1
+bin/console glpi:database:update -n
 
 # delete the install file
 test -f "${GLPI_ROOT}/install/install.php" && rm "${GLPI_ROOT}/install/install.php"
+
+# re-set permissions, in case anything has changed
+chown -R www-data:www-data "${GLPI_VAR_DIR}" "${GLPI_LOG_DIR}"
+chmod -R u=rwX,g=rwX,o=--- "${GLPI_VAR_DIR}" "${GLPI_LOG_DIR}"
 
 exec "$@"
