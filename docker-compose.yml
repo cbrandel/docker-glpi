@@ -1,0 +1,91 @@
+---
+version: "3.7"
+
+networks:
+  glpi-backend:
+
+volumes:
+  glpi-db:
+    driver_opts:
+      type: none
+      device: ./glpi-db
+      o: bind
+  glpi-root:
+  glpi-files:
+    driver_opts:
+      type: none
+      device: ./glpi-files
+      o: bind
+  glpi-etc:
+    driver_opts:
+      type: none
+      device: ./glpi-etc
+      o: bind
+  glpi-phpmyadmin:
+
+services:
+  # Mysql Container
+  mariadb:
+    image: mariadb:10.5
+    container_name: glpi-db
+    networks:
+      - glpi-backend
+    volumes:
+      - glpi-db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "glpi"
+      MYSQL_USER: "glpi"
+      MYSQL_PASSWORD: "glpi"
+
+  # GLPI Container
+  glpi:
+    depends_on:
+      - mariadb
+    image: cbrandel/glpi:9.5.5
+    container_name : glpi-app
+    networks:
+      - glpi-backend
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - glpi-files:/var/lib/glpi
+      - glpi-root:/var/www/glpi
+      - glpi-etc:/etc/glpi
+    environment:
+      TIMEZONE: "Europe/Berlin"
+      MYSQL_DATABASE: "glpi"
+      MYSQL_USER: "glpi"
+      MYSQL_PASSWORD: "glpi"
+    labels:
+
+  # nginx container
+  nginx:
+    depends_on:
+      - glpi
+    image: nginx:stable-alpine
+    container_name: glpi-web
+    networks:
+      - glpi-backend
+    ports:
+      - 80:80
+    volumes:
+      - glpi-root:/var/www/glpi
+      - glpi-files:/var/lib/glpi
+      - glpi-phpmyadmin:/var/www/html/
+      - ./templates:/etc/nginx/templates
+    environment:
+      - NGINX_HOST=glpi.example.com
+      - NGINX_PORT=80
+      - NGINX_DOCROOT=/var/www/glpi
+
+  # Phpmyadmin Container
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5-fpm-alpine
+    container_name: glpi-pma
+    networks:
+      - glpi-backend
+    volumes:
+      - glpi-phpmyadmin:/var/www/html/
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_ABSOLUTE_URI=http://pma.example.com
