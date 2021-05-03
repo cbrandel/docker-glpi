@@ -14,12 +14,12 @@ IMG 	:= ${NAME}:${TAG}
 all: build
 
 build:
-	@docker build --build-arg GLPI_VERSION=${GLPI_VERSION} -t ${IMG} .
-	@docker tag ${IMG} ${REGISTRY}/${NAME}:${GLPI_VERSION}
-	@docker tag ${IMG} ${REGISTRY}/${NAME}:latest
+	docker build --build-arg GLPI_VERSION=${GLPI_VERSION} -t ${IMG} .
+	docker tag ${IMG} ${REGISTRY}/${NAME}:${GLPI_VERSION}
+	docker tag ${IMG} ${REGISTRY}/${NAME}:latest
 
 login:
-	@docker login ${REGISTRY}
+	docker login ${REGISTRY}
 
 push: login
-	@docker push --all-tags ${REGISTRY}/${NAME}
+	docker push --all-tags ${REGISTRY}/${NAME}
