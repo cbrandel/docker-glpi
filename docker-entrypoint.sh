@@ -30,7 +30,7 @@ echo "Create config_db.php file..."
 cat <<EOF
 <?php
 class DB extends DBmysql {
-   public \$dbhost     = 'mariadb';
+   public \$dbhost     = 'glpi-db';
    public \$dbuser     = '$MYSQL_USER';
    public \$dbpassword = '$MYSQL_PASSWORD';
    public \$dbdefault  = '$MYSQL_DATABASE';
@@ -40,11 +40,11 @@ EOF
 
 # check for database
 nok=10
-echo -n "Waiting for mariadb"
+echo -n "Waiting for glpi-db"
 while [ $nok != 0 ]
 do
     echo -n "."
-    nc -w 30 -z mariadb 3306
+    nc -w 30 -z glpi-db 3306
     if [ $? == 0 ]
     then
         break
