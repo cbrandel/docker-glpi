@@ -5,6 +5,8 @@ include ${config}
 export ${shell sed 's/=.*//' ${config}}
 
 REGISTRY?=docker.io
+NAME?=cbrandel/glpi
+GLPI_VERSION?=9.5.5
 
 .PHONY: all build
 
