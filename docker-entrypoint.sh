@@ -19,7 +19,7 @@ for dir in "${dirs[@]}"
 do
     if [ ! -d "${GLPI_VAR_DIR}/${dir}" ]
     then
-        mkdir "$dir"
+        mkdir "${GLPI_VAR_DIR}/$dir"
     fi
 done
 chown -R www-data:www-data "${GLPI_VAR_DIR}" "${GLPI_LOG_DIR}"
@@ -30,10 +30,10 @@ echo "Create config_db.php file..."
 cat <<EOF
 <?php
 class DB extends DBmysql {
-   public \$dbhost     = 'glpi-db';
-   public \$dbuser     = '$MYSQL_USER';
-   public \$dbpassword = '$MYSQL_PASSWORD';
-   public \$dbdefault  = '$MYSQL_DATABASE';
+   public \$dbhost     = '${MYSQL_HOST}';
+   public \$dbuser     = '${MYSQL_USER}';
+   public \$dbpassword = '${MYSQL_PASSWORD}';
+   public \$dbdefault  = '${MYSQL_DATABASE}';
 }
 EOF
 ) > "${GLPI_CONFIG_DIR}/config_db.php"
@@ -54,6 +54,10 @@ do
     fi
 done
 echo
+# Create logfile
+touch "${GLPI_LOG_DIR}/php-errors.log"
+touch "${GLPI_LOG_DIR}/sql-errors.log"
+tail -F  "${GLPI_LOG_DIR}/php-errors.log" "${GLPI_LOG_DIR}/sql-errors.log" &
 cd "${GLPI_ROOT}"
 db_res=$(bin/console glpi:database:check > /dev/null 2>&1)
 if [ $? == 255 ]

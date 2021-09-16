@@ -109,9 +109,7 @@ RUN set -ex; \
     curl -fsSL -o glpi.tar.gz $URL; \
     tar -xf glpi.tar.gz -C "${GLPI_ROOT}" --strip-components=1; \
     chown -R www-data:www-data "${GLPI_ROOT}"; \
-    rm -r glpi.tar.gz; \
-    # forward request and error logs to docker log collector
-    ln -sf /dev/stderr /var/log/glpi/php-errors.log
+    rm -r glpi.tar.gz
 
 VOLUME [ "${GLPI_VAR_DIR}" "${GLPI_CONFIG_DIR}" ]
 
@@ -122,5 +120,9 @@ COPY glpi/local_define.php ${GLPI_CONFIG_DIR}/local_define.php
 # Copy main script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
+ENV MYSQL_HOST glpi-db
+ENV MYSQL_USER glpi
+ENV MYSQL_PASSWORD glpi
+ENV MYSQL_DATABASE glpi
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 CMD ["php-fpm"]
