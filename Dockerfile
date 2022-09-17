@@ -111,7 +111,7 @@ RUN set -ex; \
     chown -R www-data:www-data "${GLPI_ROOT}"; \
     rm -r glpi.tar.gz
 
-VOLUME [ "${GLPI_VAR_DIR}" "${GLPI_CONFIG_DIR}" ]
+VOLUME [ "${GLPI_ROOT}" "${GLPI_VAR_DIR}" "${GLPI_CONFIG_DIR}" ]
 
 # Copy configuration
 COPY glpi/downstream.php ${GLPI_ROOT}/downstream.php
